@@ -1,0 +1,22 @@
+{
+  "name": "parkade-io",
+  "version": "1.0.0",
+  "description": "Parkade.io Token & ICO code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LINKDBlockchain/parkade-io.git"
+  },
+  "author": "LINKD Blockchain Solutions INC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LINKDBlockchain/parkade-io/issues"
+  },
+  "homepage": "https://github.com/LINKDBlockchain/parkade-io#readme",
+  "dependencies": {
+    "zeppelin-solidity": "^1.9.0"
+  }
+}

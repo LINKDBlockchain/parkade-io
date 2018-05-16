@@ -18,5 +18,9 @@
   "homepage": "https://github.com/LINKDBlockchain/parkade-io#readme",
   "dependencies": {
     "zeppelin-solidity": "^1.9.0"
+  },
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0"
   }
 }

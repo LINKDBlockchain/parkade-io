@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
+import "zeppelin-solidity/contracts/token/ERC20/BasicToken.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 // TODO: Implement SafeMath & ERC20 standards compliance
@@ -12,25 +12,25 @@ pragma solidity ^0.4.21;
     based on https://programtheblockchain.com/posts/2018/02/07/writing-a-simple-dividend-token-contract/
     and https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/
 */
-contract ParkadeCoin is ERC20Basic {
+contract ParkadeCoin is BasicToken {
 
     string public name = "Parkade Coin";
     string public symbol = "PRKC";
     uint8 public decimals = 18;
 
-    uint256 public totalSupply = 1000000 * (uint256(10) ** decimals);
+    uint256 totalSupply_ = 1000000 * (uint256(10) ** decimals);
 
-    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public balances;
 
     function ParkadeCoin() public {
         // Initially assign all tokens to the contract's creator.
-        balanceOf[msg.sender] = totalSupply;
-        emit Transfer(address(0), msg.sender, totalSupply);
+        balances[msg.sender] = totalSupply_;
+        emit Transfer(address(0), msg.sender, totalSupply_);
     }
 
     uint256 public scaling = uint256(10) ** 8;
 
-    mapping(address => uint256) public scaledDividendBalanceOf;
+    mapping(address => uint256) public scaledDividendbalances;
 
     uint256 public scaledDividendPerToken;
 
@@ -39,7 +39,7 @@ contract ParkadeCoin is ERC20Basic {
     function update(address account) internal {
         uint256 owed =
             scaledDividendPerToken - scaledDividendCreditedTo[account];
-        scaledDividendBalanceOf[account] += balanceOf[account] * owed;
+        scaledDividendbalances[account] += balances[account] * owed;
         scaledDividendCreditedTo[account] = scaledDividendPerToken;
     }
 
@@ -49,13 +49,13 @@ contract ParkadeCoin is ERC20Basic {
     mapping(address => mapping(address => uint256)) public allowance;
 
     function transfer(address to, uint256 value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= value);
+        require(balances[msg.sender] >= value);
 
         update(msg.sender);
         update(to);
 
-        balanceOf[msg.sender] -= value;
-        balanceOf[to] += value;
+        balances[msg.sender] -= value;
+        balances[to] += value;
 
         emit Transfer(msg.sender, to, value);
         return true;
@@ -65,14 +65,14 @@ contract ParkadeCoin is ERC20Basic {
         public
         returns (bool success)
     {
-        require(value <= balanceOf[from]);
+        require(value <= balances[from]);
         require(value <= allowance[from][msg.sender]);
 
         update(from);
         update(to);
 
-        balanceOf[from] -= value;
-        balanceOf[to] += value;
+        balances[from] -= value;
+        balances[to] += value;
         allowance[from][msg.sender] -= value;
         emit Transfer(from, to, value);
         return true;
@@ -84,16 +84,16 @@ contract ParkadeCoin is ERC20Basic {
         // scale the deposit and add the previous remainder
         uint256 available = (msg.value * scaling) + scaledRemainder;
 
-        scaledDividendPerToken += available / totalSupply;
+        scaledDividendPerToken += available / totalSupply_;
 
         // compute the new remainder
-        scaledRemainder = available % totalSupply;
+        scaledRemainder = available % totalSupply_;
     }
 
     function withdraw() public {
         update(msg.sender);
-        uint256 amount = scaledDividendBalanceOf[msg.sender] / scaling;
-        scaledDividendBalanceOf[msg.sender] %= scaling;  // retain the remainder
+        uint256 amount = scaledDividendbalances[msg.sender] / scaling;
+        scaledDividendbalances[msg.sender] %= scaling;  // retain the remainder
         msg.sender.transfer(amount);
     }
 

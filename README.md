@@ -5,6 +5,8 @@ Initial truffle setup copied from https://blog.zeppelin.solutions/how-to-create-
 ## To setup Dev Environment:
 1. If you don't already have truffle, installed, run
 ``` npm install -g truffle ```
+Run npm install
+``` npm install ```
 
 2. From this directory, execute this to build the code:
 ``` truffle compile ```

@@ -47,16 +47,22 @@ contract ParkadeCoin is BasicToken {
 
     mapping(address => mapping(address => uint256)) public allowance;
 
-    function transfer(address to, uint256 value) public returns (bool success) {
-        require(balances[msg.sender] >= value);
+    /**
+    * @dev transfer token for a specified address
+    * @param _to The address to transfer to.
+    * @param _value The amount to be transferred.
+    */
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        require(balances[msg.sender] >= _value);
 
         update(msg.sender);
-        update(to);
+        update(_to);
 
-        balances[msg.sender] -= value;
-        balances[to] += value;
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
 
-        emit Transfer(msg.sender, to, value);
+
+        emit Transfer(msg.sender, _to, _value);
         return true;
     }
 

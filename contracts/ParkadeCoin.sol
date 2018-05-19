@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "zeppelin-solidity/contracts/token/ERC20/BasicToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 // TODO: Implement SafeMath & ERC20 standards compliance
@@ -11,7 +11,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
     based on https://programtheblockchain.com/posts/2018/02/07/writing-a-simple-dividend-token-contract/
     and https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/
 */
-contract ParkadeCoin is BasicToken {
+contract ParkadeCoin is StandardToken {
 
     string public name = "Parkade Coin";
     string public symbol = "PRKC";
@@ -19,8 +19,6 @@ contract ParkadeCoin is BasicToken {
 
     uint256 public constant INITIAL_SUPPLY = 400000000 * (uint256(10) ** decimals);
     uint256 public scaling = uint256(10) ** 8;
-
-    // mapping(address => uint256) public balances;
 
     constructor() public {
         totalSupply_ = INITIAL_SUPPLY;
@@ -43,7 +41,6 @@ contract ParkadeCoin is BasicToken {
     }
 
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     mapping(address => mapping(address => uint256)) public allowance;
 
@@ -66,20 +63,21 @@ contract ParkadeCoin is BasicToken {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 value)
+    function transferFrom(address _from, address _to, uint256 _value)
         public
         returns (bool success)
     {
-        require(value <= balances[from]);
-        require(value <= allowance[from][msg.sender]);
+        require(_to != address(0));
+        require(_value <= balances[_from]);
+        require(_value <= allowed[_from][msg.sender]);
 
-        update(from);
-        update(to);
+        update(_from);
+        update(_to);
 
-        balances[from] -= value;
-        balances[to] += value;
-        allowance[from][msg.sender] -= value;
-        emit Transfer(from, to, value);
+        balances[_from] = balances[_from].sub(_value);
+        balances[_to] = balances[_to].add(_value);
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
 
@@ -87,7 +85,7 @@ contract ParkadeCoin is BasicToken {
 
     function deposit() public payable {
         // scale the deposit and add the previous remainder
-        uint256 available = (msg.value * scaling) + scaledRemainder;
+        uint256 available = (msg.value.mul(scaling)).add(scaledRemainder);
 
         scaledDividendPerToken += available / totalSupply_;
 
@@ -101,14 +99,4 @@ contract ParkadeCoin is BasicToken {
         scaledDividendbalances[msg.sender] %= scaling;  // retain the remainder
         msg.sender.transfer(amount);
     }
-
-    function approve(address spender, uint256 value)
-        public
-        returns (bool success)
-    {
-        allowance[msg.sender][spender] = value;
-        emit Approval(msg.sender, spender, value);
-        return true;
-    }
-
 }

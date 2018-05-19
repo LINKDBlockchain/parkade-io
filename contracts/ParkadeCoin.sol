@@ -5,7 +5,6 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 // TODO: Implement SafeMath & ERC20 standards compliance
 // TODO: Should anyone be able to deposit money in the contract? Or only the owner / creator (ie, ParkadeIO)
-pragma solidity ^0.4.21;
 
 /**
     A dividend-paying token,
@@ -18,17 +17,17 @@ contract ParkadeCoin is BasicToken {
     string public symbol = "PRKC";
     uint8 public decimals = 18;
 
-    uint256 totalSupply_ = 1000000 * (uint256(10) ** decimals);
-
-    mapping(address => uint256) public balances;
-
-    function ParkadeCoin() public {
-        // Initially assign all tokens to the contract's creator.
-        balances[msg.sender] = totalSupply_;
-        emit Transfer(address(0), msg.sender, totalSupply_);
-    }
-
+    uint256 public constant INITIAL_SUPPLY = 400000000 * (uint256(10) ** decimals);
     uint256 public scaling = uint256(10) ** 8;
+
+    // mapping(address => uint256) public balances;
+
+    constructor() public {
+        totalSupply_ = INITIAL_SUPPLY;
+        // Initially assign all tokens to the contract's creator.
+        balances[msg.sender] = INITIAL_SUPPLY;
+        emit Transfer(address(0), msg.sender, INITIAL_SUPPLY);
+    }
 
     mapping(address => uint256) public scaledDividendbalances;
 

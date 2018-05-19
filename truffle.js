@@ -1,4 +1,7 @@
 // Allows us to use ES6 in our migrations and tests.
+require('babel-register')({
+  ignore: /node_modules\/(?!zeppelin-solidity)/
+});
 require('babel-register')
 require('babel-polyfill')
 

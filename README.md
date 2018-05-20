@@ -25,3 +25,10 @@ Note: If you're using Ganache-cli, you may have to modify truffle.js port to por
 2. Create a variable to reference the new contract:
 ``` ParkadeCoin.new().then(function(res) { prkc = ParkadeCoin.at(res.address) })
 prkc.name() ```
+
+## Remix Testing, Truffle Flattener
+1. Install:
+``` npm install -g truffle-flattener ```
+
+2. Specify "parent" file, and direct output
+``` truffle-flattener contracts\ParkadeCoinCrowdsale.sol > output.txt ```

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 // TODO: Implement SafeMath & ERC20 standards compliance
@@ -12,7 +12,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
     based on https://programtheblockchain.com/posts/2018/02/07/writing-a-simple-dividend-token-contract/
     and https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/
 */
-contract ParkadeCoin is StandardToken, MintableToken {
+contract ParkadeCoin is StandardToken, Ownable {
 
   string public name = "Parkade Coin";
   string public symbol = "PRKC";
@@ -50,6 +50,8 @@ contract ParkadeCoin is StandardToken, MintableToken {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool success) {
+    uint256 debugBalance;
+    debugBalance = balances[msg.sender];
     require(balances[msg.sender] >= _value);
 
     update(msg.sender);
@@ -67,6 +69,8 @@ contract ParkadeCoin is StandardToken, MintableToken {
       public
       returns (bool success)
   {
+    uint256 debugAllowed;
+    debugAllowed = allowed[_from][msg.sender];
     require(_to != address(0));
     require(_value <= balances[_from]);
     require(_value <= allowed[_from][msg.sender]);

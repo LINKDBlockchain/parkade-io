@@ -1,26 +1,28 @@
 pragma solidity 0.4.24;
 
 import "./ParkadeCoin.sol";
-import "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
+import "zeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsale.sol";
 
-
-contract ParkadeCoinCrowdsale is TimedCrowdsale, MintedCrowdsale {
+contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale {
 
   function ParkadeCoinCrowdsale
   (
     uint256 _openingTime,
     uint256 _closingTime,
     uint256 _rate,
+    uint256 _goal,
     address _wallet,
-    MintableToken _token
+    StandardToken _token
   )
 
-  public Crowdsale(_rate, _wallet, _token) TimedCrowdsale(_openingTime, _closingTime) {
-  }
+  public 
+  Crowdsale(_rate, _wallet, _token) 
+  TimedCrowdsale(_openingTime, _closingTime)
+  RefundableCrowdsale(_goal)
+  {}
 
-  function hasClosed() public view returns (bool) {
-    // solium-disable-next-line security/no-block-members
-    return block.timestamp > closingTime;
+  function hasOpened() public view returns (bool) {
+    return block.timestamp > openingTime;
   }
 }

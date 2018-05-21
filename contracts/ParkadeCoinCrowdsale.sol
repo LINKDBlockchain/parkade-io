@@ -3,8 +3,9 @@ pragma solidity 0.4.24;
 import "./ParkadeCoin.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsale.sol";
+import "zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
-contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale {
+contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, WhitelistedCrowdsale {
 
   function ParkadeCoinCrowdsale
   (
@@ -23,6 +24,9 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale {
   {}
 
   function hasOpened() public view returns (bool) {
+    // TODO: Investigate this line. Without the comment below, says we shouldn't be using 
+    //       block.timestamp at all but that's used a lot in the TimedCrowdsale library...
+    // solium-disable-next-line security/no-block-members
     return block.timestamp > openingTime;
   }
 }

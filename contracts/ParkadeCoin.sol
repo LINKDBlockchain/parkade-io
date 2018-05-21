@@ -50,8 +50,6 @@ contract ParkadeCoin is StandardToken, Ownable {
   * @param _value The amount to be transferred.
   */
   function transfer(address _to, uint256 _value) public returns (bool success) {
-    uint256 debugBalance;
-    debugBalance = balances[msg.sender];
     require(balances[msg.sender] >= _value);
 
     update(msg.sender);
@@ -69,8 +67,6 @@ contract ParkadeCoin is StandardToken, Ownable {
       public
       returns (bool success)
   {
-    uint256 debugAllowed;
-    debugAllowed = allowed[_from][msg.sender];
     require(_to != address(0));
     require(_value <= balances[_from]);
     require(_value <= allowed[_from][msg.sender]);

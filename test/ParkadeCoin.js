@@ -1,6 +1,7 @@
 const ParkadeCoin = artifacts.require('./ParkadeCoin.sol')
 
 // Mocha testing truffle?
+// truffle test test/ParkadeCoin.js
 contract('ParkadeCoin', function( [owner] ) {
     let prkc
 

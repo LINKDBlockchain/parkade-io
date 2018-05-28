@@ -5,15 +5,30 @@ Initial truffle setup copied from https://blog.zeppelin.solutions/how-to-create-
 ## To setup Dev Environment:
 1. If you don't already have truffle, installed, run
 ``` npm install -g truffle ```
+Run npm install
+``` npm install ```
 
-2. From this directory, execute this to build the code:
+## To build the code
+1. From this directory, execute this to build the code:
 ``` truffle compile ```
 
-3. Launch Ganache or Ganache-cli (Win 7)
+2. Launch Ganache or Ganache-cli (Win 7)
 Note: If you're using Ganache-cli, you may have to modify truffle.js port to port: 8545
 
-4. Run this to deploy the code!
+3. Run this to deploy the code!
 ``` truffle migrate ```
 
-5. Interact with the contracts by firing up a truffle console:
+## Interact with the smart contract
+1. Interact with the contracts by firing up a truffle console:
 ``` truffle console ```
+
+2. Create a variable to reference the new contract:
+``` ParkadeCoin.new().then(function(res) { prkc = ParkadeCoin.at(res.address) })
+prkc.name() ```
+
+## Remix Testing, Truffle Flattener
+1. Install:
+``` npm install -g truffle-flattener ```
+
+2. Specify "parent" file, and direct output
+``` truffle-flattener contracts\ParkadeCoinCrowdsale.sol > output.txt ```

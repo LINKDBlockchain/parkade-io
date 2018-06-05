@@ -13,6 +13,10 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   uint256 public firstDiscountEnds;
   uint256 public secondDiscountEnds;
 
+  uint256 public unusedTokensWithdrawlTime;
+
+  address public executor;
+
   function ParkadeCoinCrowdsale
   (
     uint256 _openingTime,
@@ -23,12 +27,14 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     uint256 _secondRate,
     uint256 _normalRate,
     uint256 _goal,
-    address _wallet,
+    uint256 _unusedTokensWithdrawlTime,
+    address _owner,
+    address _executor,
     StandardToken _token
   )
 
   public 
-  Crowdsale(_firstRate, _wallet, _token) 
+  Crowdsale(_firstRate, _owner, _token) 
   TimedCrowdsale(_openingTime, _closingTime)
   RefundableCrowdsale(_goal)
   {
@@ -36,13 +42,16 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     secondDiscountedRate = _secondRate;
     firstDiscountEnds= _firstDiscountEnds;
     secondDiscountEnds = _secondDiscountEnds;
+    unusedTokensWithdrawlTime = _unusedTokensWithdrawlTime;
+    executor = _executor;
   }
 
-  function hasOpened() public view returns (bool) {
-    // TODO: Investigate this line. Without the comment below, says we shouldn't be using 
-    //       block.timestamp at all but that's used a lot in the TimedCrowdsale library...
-    // solium-disable-next-line security/no-block-members
-    return block.timestamp > openingTime;
+  /**
+   * @dev Throws if called by any account other than the owner OR the executor.
+   */
+  modifier onlyOwnerOrExecutor() {
+    require(msg.sender == owner || msg.sender == executor);
+    _;
   }
 
   /**
@@ -64,6 +73,12 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     }
   }
 
+// TODO: Validate this functionality
+  function withdrawUnsoldTokens(uint256 amount) external onlyOwner {
+    require (block.timestamp > unusedTokensWithdrawlTime);
+    _processPurchase(wallet, amount);
+  }
+
    /**
    * @dev Overriden token value function. Provides functionality for discounted rates in the tokensale
    * @param _weiAmount Value in wei to be converted into tokens
@@ -83,5 +98,43 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     {
     return _weiAmount.mul(rate);
     }
+  }
+
+   /**
+   * @dev Adds single address to whitelist.
+   * @param _beneficiary Address to be added to the whitelist
+   */
+  function addToWhitelist(address _beneficiary) external onlyOwnerOrExecutor {
+    whitelist[_beneficiary] = true;
+  }
+
+  /**
+   * @dev Adds list of addresses to whitelist. Not overloaded due to limitations with truffle testing.
+   * @param _beneficiaries Addresses to be added to the whitelist
+   */
+  function addManyToWhitelist(address[] _beneficiaries) external onlyOwnerOrExecutor {
+    for (uint256 i = 0; i < _beneficiaries.length; i++) {
+      whitelist[_beneficiaries[i]] = true;
+    }
+  }
+
+  /**
+   * @dev Removes single address from whitelist.
+   * @param _beneficiary Address to be removed to the whitelist
+   */
+  function removeFromWhitelist(address _beneficiary) external onlyOwnerOrExecutor {
+    whitelist[_beneficiary] = false;
+  }
+
+
+    /**
+   * @dev Validation of an incoming purchase. Overridden to ensure that the tokensale contains enough tokens to sell.
+   * @param _beneficiary Address performing the token purchase
+   * @param _weiAmount Value in wei involved in the purchase
+   */
+  function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
+    // TODO: Validate this functionality
+    require(token.balanceOf(this) > _getTokenAmount(_weiAmount));
+    super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 }

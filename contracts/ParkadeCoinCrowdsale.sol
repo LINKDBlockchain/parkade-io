@@ -73,7 +73,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     }
   }
 
-// TODO: Validate this functionality
+// ! Functionality has been validated
+// Note: Withdrawl goes to the "wallet" variable - specified during instantiation.
   function withdrawUnsoldTokens(uint256 amount) external onlyOwner {
     require (block.timestamp > unusedTokensWithdrawlTime);
     _processPurchase(wallet, amount);

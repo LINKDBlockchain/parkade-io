@@ -1,4 +1,4 @@
-pragma solidity 0.4.23;
+pragma solidity 0.4.24;
 
 import "./ParkadeCoin.sol";
 import "zeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
@@ -17,6 +17,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
 
   address public executor;
 
+  bool refundsAllowed;
+
   function ParkadeCoinCrowdsale
   (
     uint256 _openingTime,
@@ -34,7 +36,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   )
 
   public 
-  Crowdsale(_firstRate, _owner, _token) 
+  Crowdsale(_normalRate, _owner, _token) 
   TimedCrowdsale(_openingTime, _closingTime)
   RefundableCrowdsale(_goal)
   {
@@ -44,6 +46,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     secondDiscountEnds = _secondDiscountEnds;
     unusedTokensWithdrawlTime = _unusedTokensWithdrawlTime;
     executor = _executor;
+    refundsAllowed = true;
   }
 
   /**
@@ -78,6 +81,13 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   function withdrawUnsoldTokens(uint256 amount) external onlyOwner {
     require (block.timestamp > unusedTokensWithdrawlTime);
     _processPurchase(wallet, amount);
+  }
+
+// ! Functionality has been validated
+// Note: Withdrawl goes to the "wallet" variable - specified during instantiation.
+  function changeExecutor(address _newExec) external onlyOwnerOrExecutor {
+    require(_newExec != address(0));
+    executor = _newExec;
   }
 
    /**
@@ -138,4 +148,23 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     require(token.balanceOf(this) > _getTokenAmount(_weiAmount));
     super._preValidatePurchase(_beneficiary, _weiAmount);
   }
+
+    /**
+   * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
+   */
+  function claimRefund() public {
+    require(isFinalized);
+    require(!goalReached() || refundsAllowed == true);
+
+    vault.refund(msg.sender);
+  }
+
+/**
+* @dev Allow the tokensale owner to specify that refunds are allowed regardless of soft cap goal
+*/
+  function allowRefunds() external onlyOwner {
+      require(hasClosed());
+      refundsAllowed = true;
+  }
+
 }

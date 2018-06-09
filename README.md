@@ -38,11 +38,12 @@ Soft Cap: 680ETH
 Hard Cap: 138,720 ETH
 
 Table 1: Token price per timeframe
-| Timeframe     | Token Price (Eth) |
-| ------------- |:-------------:|3
-| Aug 1 - Aug 7   | 0.000544    |
-| Aug 7 - Aug 14  | 0.000612    |
-| Aug 14 - Aug 31 | 0.000680    |
+
+| Timeframe      | Token Price (Eth) |
+|----------------|-------------------|
+| August 1 - 7   | 0.000544          |
+| August 7 - 14  | 0.000612          |
+| August 14 - 31 | 0.000680          |
 
 Token Disbursement: Immediately after purchase
 Refund Policy: After August 31st if soft cap is unmet, or at the discretion of parkade.io team

@@ -13,7 +13,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   uint256 public firstDiscountEnds;
   uint256 public secondDiscountEnds;
 
-  uint256 public unusedTokensWithdrawlTime;
+  uint256 public unusedTokensWithdrawalTime;
 
   address public executor;
 
@@ -29,7 +29,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     uint256 _secondRate,
     uint256 _normalRate,
     uint256 _goal,
-    uint256 _unusedTokensWithdrawlTime,
+    uint256 _unusedTokensWithdrawalTime,
     address _owner,
     address _executor,
     StandardToken _token
@@ -44,7 +44,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     secondDiscountedRate = _secondRate;
     firstDiscountEnds= _firstDiscountEnds;
     secondDiscountEnds = _secondDiscountEnds;
-    unusedTokensWithdrawlTime = _unusedTokensWithdrawlTime;
+    unusedTokensWithdrawalTime = _unusedTokensWithdrawalTime;
     executor = _executor;
     refundsAllowed = true;
   }
@@ -78,8 +78,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
 
 // ! Functionality has been validated
 // Note: Withdrawl goes to the "wallet" variable - specified during instantiation.
-  function withdrawUnsoldTokens(uint256 amount) external onlyOwner {
-    require (block.timestamp > unusedTokensWithdrawlTime);
+  function withdrawalUnsoldTokens(uint256 amount) external onlyOwner {
+    require (block.timestamp > unusedTokensWithdrawalTime);
     _processPurchase(wallet, amount);
   }
 

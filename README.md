@@ -39,7 +39,7 @@ Hard Cap: 138,720 ETH
 
 Table 1: Token price per timeframe
 | Timeframe     | Token Price (Eth) |
-| ------------- |:-------------:|
+| ------------- |:-------------:|p
 | Aug 1 - Aug 7   | 0.000544    |
 | Aug 7 - Aug 14  | 0.000612    |
 | Aug 14 - Aug 31 | 0.000680    |

@@ -20,7 +20,7 @@ contract ParkadeCoin is StandardToken, Ownable {
   /**
     There are a total of 400,000,000 tokens * 10^18 = 4 * 10^26 token units total
     A scaling value of 1e10 means that a deposit of 0.04Eth will increase scaledDividendPerToken by 1.
-    A scaling value of 1e10 means that investors must wait until their scaledDividendbalances 
+    A scaling value of 1e10 means that investors must wait until their scaledDividendBalances 
       is at least 1e10 before any withdrawls will credit their account.
   */
   uint256 public scaling = uint256(10) ** 10;
@@ -29,7 +29,7 @@ contract ParkadeCoin is StandardToken, Ownable {
   uint256 public scaledRemainder = 0;
 
   // Amount of wei credited to an account, but not yet withdrawn
-  mapping(address => uint256) public scaledDividendbalances;
+  mapping(address => uint256) public scaledDividendBalances;
   // Cumulative amount of Wei credited to an account, since the contract's deployment
   mapping(address => uint256) public scaledDividendCreditedTo;
   // Cumulative amount of Wei that each token has been entitled to. Independent of withdrawals
@@ -53,7 +53,7 @@ contract ParkadeCoin is StandardToken, Ownable {
 
     // Update the dividends owed to the account (in Wei)
     // # Tokens * (# Wei / token) = # Wei
-    scaledDividendbalances[account] += balances[account] * owed;
+    scaledDividendBalances[account] += balances[account] * owed;
     // Update the total (wei / token) amount credited to the account
     scaledDividendCreditedTo[account] = scaledDividendPerToken;
   }
@@ -132,9 +132,9 @@ contract ParkadeCoin is StandardToken, Ownable {
     update(msg.sender);
 
     // Compute amount owed to the investor
-    uint256 amount = scaledDividendbalances[msg.sender] / scaling;
+    uint256 amount = scaledDividendBalances[msg.sender] / scaling;
     // Put back any remainder
-    scaledDividendbalances[msg.sender] %= scaling;
+    scaledDividendBalances[msg.sender] %= scaling;
 
     // Send investor the Wei dividends
     msg.sender.transfer(amount);

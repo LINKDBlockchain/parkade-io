@@ -6,47 +6,57 @@ import "zeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsale.s
 import "zeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, WhitelistedCrowdsale {
-  // How many token units a buyer gets per wei
-  uint256 public firstDiscountedRate;
-  uint256 public secondDiscountedRate;
+  
+  // Discounted Rates. This is the amount of tokens (of the smallest possible denomination ie- 0.0000...0001PRKC) 
+  // that a user will receive per Wei contributed to the sale.
+  uint256 public firstDiscountedRate = 1838;
+  uint256 public secondDiscountedRate = 1634;
+  uint256 public nonDiscountedRate = 1470;
 
-  uint256 public firstDiscountEnds;
-  uint256 public secondDiscountEnds;
+  // Timestamp indicating when the crowdsale will open
+  // Aug 1, 2018 12:00:00 AM GMT
+  uint256 public openingTime = 1533081600;
 
-  uint256 public unusedTokensWithdrawalTime;
+  // Timestamps indicating when the first and second discount will end.
+  // Aug 7, 2018 11:59:59PM GMT
+  uint256 public firstDiscountEnds = 1533686399;
+  // Aug 13, 2018 11:59:59PM GMT
+  uint256 public secondDiscountEnds = 1534204799;
 
+  // Timestamp indicating when the crowdsale will close
+  // Aug 31, 2018 11:59:59PM GMT
+  uint256 public closingTime = 1535759999;
+
+  // Timestamp indicating when unsold tokens may be withdrawn by the Parkade.io wallet for future use
+  // Sept 1, 2019 12:00:00AM GMT
+  uint256 public unusedTokensWithdrawalTime = 1567296000;
+
+  // A separate Ethereum address which only has the right to add addresses to the whitelist
+  // It is not permitted to access any other functionality, or to claim funds
+  // This is required for easier administration of the ParkadeCoin Crowdsale
   address public executor;
 
+  // Whether refunds are allowed or not (regardless of if the tokensale's soft cap has been met)
+  // This functionality allows Parkade.IO to refund all investors at the end of the tokensale, even if
+  //  the soft cap is not met.
   bool refundsAllowed;
 
   function ParkadeCoinCrowdsale
   (
-    uint256 _openingTime,
-    uint256 _closingTime,
-    uint256 _firstDiscountEnds,
-    uint256 _secondDiscountEnds,
-    uint256 _firstRate,
-    uint256 _secondRate,
-    uint256 _normalRate,
     uint256 _goal,
     uint256 _unusedTokensWithdrawalTime,
     address _owner,
     address _executor,
     StandardToken _token
   )
-
   public 
-  Crowdsale(_normalRate, _owner, _token) 
-  TimedCrowdsale(_openingTime, _closingTime)
+  Crowdsale(nonDiscountedRate, _owner, _token) 
+  TimedCrowdsale(openingTime, closingTime)
   RefundableCrowdsale(_goal)
   {
-    firstDiscountedRate = _firstRate;
-    secondDiscountedRate = _secondRate;
-    firstDiscountEnds= _firstDiscountEnds;
-    secondDiscountEnds = _secondDiscountEnds;
     unusedTokensWithdrawalTime = _unusedTokensWithdrawalTime;
     executor = _executor;
-    refundsAllowed = true;
+    refundsAllowed = false;
   }
 
   /**
@@ -66,18 +76,17 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     {
       return firstDiscountedRate;
     }
-    else if (block.timestamp > firstDiscountEnds && block.timestamp < secondDiscountEnds)
+    else if (block.timestamp >= firstDiscountEnds && block.timestamp < secondDiscountEnds)
     {
       return secondDiscountedRate;
     }
     else 
     {
-    return rate;
+      return rate;
     }
   }
 
-// ! Functionality has been validated
-// Note: Withdrawl goes to the "wallet" variable - specified during instantiation.
+// Note: Withdrawal goes to the "wallet" variable - specified during instantiation.
   function withdrawalUnsoldTokens(uint256 amount) external onlyOwner {
     require (block.timestamp > unusedTokensWithdrawalTime);
     _processPurchase(wallet, amount);
@@ -96,19 +105,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
    * @return Number of tokens that can be purchased with the specified _weiAmount
    */
   function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
-
-    if (block.timestamp < firstDiscountEnds)
-    {
-      return _weiAmount.mul(firstDiscountedRate);
-    }
-    else if (block.timestamp > firstDiscountEnds && block.timestamp < secondDiscountEnds)
-    {
-      return _weiAmount.mul(secondDiscountedRate);
-    }
-    else 
-    {
-    return _weiAmount.mul(rate);
-    }
+    return _weiAmount.mul(currentRate());
   }
 
    /**

@@ -41,10 +41,9 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   //  the soft cap is not met.
   bool refundsAllowed;
 
-  function ParkadeCoinCrowdsale
+  constructor
   (
     uint256 _goal,
-    uint256 _unusedTokensWithdrawalTime,
     address _owner,
     address _executor,
     StandardToken _token
@@ -54,7 +53,6 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   TimedCrowdsale(openingTime, closingTime)
   RefundableCrowdsale(_goal)
   {
-    unusedTokensWithdrawalTime = _unusedTokensWithdrawalTime;
     executor = _executor;
     refundsAllowed = false;
   }
@@ -86,14 +84,22 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     }
   }
 
-// Note: Withdrawal goes to the "wallet" variable - specified during instantiation.
-  function withdrawalUnsoldTokens(uint256 amount) external onlyOwner {
+  /**
+   * @dev Function to allow the Tokensale's owner to withdraw unsold tokens after the predetermined time
+   * @param _amount Number of PRKC tokens to withdrawal
+   */
+  function withdrawalUnsoldTokens(uint256 _amount) external onlyOwner {
     require (block.timestamp > unusedTokensWithdrawalTime);
-    _processPurchase(wallet, amount);
+    // Ensure contract has enough tokens to withdraw
+    require(token.balanceOf(this) >= _amount);
+    // Note: Withdrawal goes to the "wallet" variable - specified during instantiation.
+    _processPurchase(wallet, _amount);
   }
 
-// ! Functionality has been validated
-// Note: Withdrawl goes to the "wallet" variable - specified during instantiation.
+  /**
+   * @dev Function to change the contract's executor, which can then add addresses to the whitelist
+   * @param _newExec Address of new executor
+   */
   function changeExecutor(address _newExec) external onlyOwnerOrExecutor {
     require(_newExec != address(0));
     executor = _newExec;
@@ -141,7 +147,6 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
    * @param _weiAmount Value in wei involved in the purchase
    */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
-    // TODO: Validate this functionality
     require(token.balanceOf(this) > _getTokenAmount(_weiAmount));
     super._preValidatePurchase(_beneficiary, _weiAmount);
   }

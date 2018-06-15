@@ -47,8 +47,8 @@ contract ParkadeCoin is StandardToken, Ownable {
     // Total INITAL SUPPLY of 400 million tokens 
     totalSupply_ = uint256(400000000) * (uint256(10) ** decimals);
     // Initially assign all tokens to the contract's creator.
-    balances[msg.sender] = INITIAL_SUPPLY;
-    emit Transfer(address(0), msg.sender, INITIAL_SUPPLY);
+    balances[msg.sender] = totalSupply_;
+    emit Transfer(address(0), msg.sender, totalSupply_);
   }
 
   /**

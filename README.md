@@ -31,7 +31,7 @@ For instance, if a user was owed dividends and then transferred his tokens to an
 A standard, timed, refundable, whitelist-compatible crowdsale contract designed for Parkade.IO tokensale.
 
 ### Stats
-**Please see [parkade.io](http://www.parkade.io) for more info**
+**Please see [parkade.io](http://www.parkade.io) for more info**\
 Opening Time: August 1st, 2018 12:00AM GMT\
 Closing Time: August 31st, 2018 11:59PM GMT\
 Soft Cap: 680ETH\

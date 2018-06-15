@@ -8,14 +8,14 @@ This is the smart contract repository for the PARKADE.IO token, and tokensale. R
 The token contract is a standard ERC20 token with added dividend-paying functionality. It is based on OpenZeppelin Solidity Templates, and Todd Proebsting's Dividend Token Contract code, linked [here](https://programtheblockchain.com/posts/2018/02/07/writing-a-simple-dividend-token-contract/), and [here](https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/)
 
 ### Stats
-Name: Parkade Coin
-Symbol: PRKC
-Total Tokens: 400 million
-Decimal Places: 18
+Name: Parkade Coin\
+Symbol: PRKC\
+Total Tokens: 400 million\
+Decimal Places: 18\
 
 ### Functionality
 
-#### Depositing Dividends
+### Depositing Dividends
 The owner of the contract can deposit dividends for distribution to investors by calling the payable `deposit` function.
 
 ### Withdrawing Dividends
@@ -32,10 +32,10 @@ A standard, timed, refundable, whitelist-compatible crowdsale contract designed 
 
 ### Stats
 **Please see [parkade.io](http://www.parkade.io) for more info**
-Opening Time: August 1st, 2018 12:00AM GMT
-Closing Time: August 31st, 2018 11:59PM GMT
-Soft Cap: 680ETH
-Hard Cap: 138,720 ETH
+Opening Time: August 1st, 2018 12:00AM GMT\
+Closing Time: August 31st, 2018 11:59PM GMT\
+Soft Cap: 680ETH\
+Hard Cap: 138,720 ETH\
 
 Table 1: Token price per timeframe
 

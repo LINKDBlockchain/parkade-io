@@ -11,7 +11,7 @@ The token contract is a standard ERC20 token with added dividend-paying function
 Name: Parkade Coin\
 Symbol: PRKC\
 Total Tokens: 400 million\
-Decimal Places: 18\
+Decimal Places: 18
 
 ### Functionality
 
@@ -35,7 +35,7 @@ A standard, timed, refundable, whitelist-compatible crowdsale contract designed 
 Opening Time: August 1st, 2018 12:00AM GMT\
 Closing Time: August 31st, 2018 11:59PM GMT\
 Soft Cap: 680ETH\
-Hard Cap: 138,720 ETH\
+Hard Cap: 138,720 ETH
 
 Table 1: Token price per timeframe
 

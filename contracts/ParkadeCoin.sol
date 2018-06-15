@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -15,8 +15,7 @@ contract ParkadeCoin is StandardToken, Ownable {
   string public symbol = "PRKC";
   uint8 public decimals = 18;
 
-  // Total INITAL SUPPLY of 400 million tokens
-  uint256 public constant INITIAL_SUPPLY = 400000000 * (uint256(10) ** decimals);
+
   /**
     There are a total of 400,000,000 tokens * 10^18 = 4 * 10^26 token units total
     A scaling value of 1e10 means that a deposit of 0.04Eth will increase scaledDividendPerToken by 1.
@@ -33,10 +32,20 @@ contract ParkadeCoin is StandardToken, Ownable {
   // Cumulative amount of Wei credited to an account, since the contract's deployment
   mapping(address => uint256) public scaledDividendCreditedTo;
   // Cumulative amount of Wei that each token has been entitled to. Independent of withdrawals
-  uint256 public scaledDividendPerToken;
+  uint256 public scaledDividendPerToken = 0;
+
+  /**
+   * @dev Throws if transaction size is greater than the provided amount
+   * This is used to mitigate the Ethereum short address attack as described in https://tinyurl.com/y8jjvh8d
+   */
+  modifier onlyPayloadSize(uint size) { 
+    assert(msg.data.length >= size + 4);
+    _;    
+  }
 
   constructor() public {
-    totalSupply_ = INITIAL_SUPPLY;
+    // Total INITAL SUPPLY of 400 million tokens 
+    totalSupply_ = uint256(400000000) * (uint256(10) ** decimals);
     // Initially assign all tokens to the contract's creator.
     balances[msg.sender] = INITIAL_SUPPLY;
     emit Transfer(address(0), msg.sender, INITIAL_SUPPLY);
@@ -46,14 +55,16 @@ contract ParkadeCoin is StandardToken, Ownable {
   * @dev Update the dividend balances associated with an account
   * @param account The account address to update
   */
-  function update(address account) internal {
+  function update(address account) 
+  internal 
+  {
     // Calculate the amount "owed" to the account, in units of (wei / token) S
     // Subtract Wei already credited to the account (per token) from the total Wei per token
-    uint256 owed = scaledDividendPerToken - scaledDividendCreditedTo[account];
+    uint256 owed = scaledDividendPerToken.sub(scaledDividendCreditedTo[account]);
 
     // Update the dividends owed to the account (in Wei)
     // # Tokens * (# Wei / token) = # Wei
-    scaledDividendBalances[account] += balances[account] * owed;
+    scaledDividendBalances[account] = scaledDividendBalances[account].add(balances[account].mul(owed));
     // Update the total (wei / token) amount credited to the account
     scaledDividendCreditedTo[account] = scaledDividendPerToken;
   }
@@ -69,7 +80,11 @@ contract ParkadeCoin is StandardToken, Ownable {
   * @param _to The address to transfer to.
   * @param _value The amount to be transferred.
   */
-  function transfer(address _to, uint256 _value) public returns (bool success) {
+  function transfer(address _to, uint256 _value) 
+  public 
+  onlyPayloadSize(2*32) 
+  returns (bool success) 
+  {
     require(balances[msg.sender] >= _value);
 
     // Added to transfer - update the dividend balances for both sender and receiver before transfer of tokens
@@ -91,6 +106,7 @@ contract ParkadeCoin is StandardToken, Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value)
       public
+      onlyPayloadSize(2*32)
       returns (bool success)
   {
     require(_to != address(0));
@@ -111,12 +127,16 @@ contract ParkadeCoin is StandardToken, Ownable {
   /**
   * @dev deposit Ether into the contract for dividend splitting
   */
-  function deposit() public payable onlyOwner {
+  function deposit() 
+  public 
+  payable 
+  onlyOwner 
+  {
     // Scale the deposit and add the previous remainder
     uint256 available = (msg.value.mul(scaling)).add(scaledRemainder);
 
     // Compute amount of Wei per token
-    scaledDividendPerToken += available / totalSupply_;
+    scaledDividendPerToken = scaledDividendPerToken.add(available.div(totalSupply_));
 
     // Compute the new remainder
     scaledRemainder = available % totalSupply_;
@@ -127,12 +147,14 @@ contract ParkadeCoin is StandardToken, Ownable {
   /**
   * @dev withdraw dividends owed to an address
   */
-  function withdraw() public {
+  function withdraw() 
+  public 
+  {
     // Update the dividend amount associated with the account
     update(msg.sender);
 
     // Compute amount owed to the investor
-    uint256 amount = scaledDividendBalances[msg.sender] / scaling;
+    uint256 amount = scaledDividendBalances[msg.sender].div(scaling);
     // Put back any remainder
     scaledDividendBalances[msg.sender] %= scaling;
 

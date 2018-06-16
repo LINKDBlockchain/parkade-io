@@ -105,19 +105,19 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     executor = _newExec;
   }
 
-   /**
-   * @dev Overriden token value function. Provides functionality for discounted rates in the tokensale
-   * @param _weiAmount Value in wei to be converted into tokens
-   * @return Number of tokens that can be purchased with the specified _weiAmount
-   */
+  /**
+  * @dev Overriden token value function. Provides functionality for discounted rates in the tokensale
+  * @param _weiAmount Value in wei to be converted into tokens
+  * @return Number of tokens that can be purchased with the specified _weiAmount
+  */
   function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
     return _weiAmount.mul(currentRate());
   }
 
-   /**
-   * @dev Adds single address to whitelist.
-   * @param _beneficiary Address to be added to the whitelist
-   */
+  /**
+  * @dev Adds single address to whitelist.
+  * @param _beneficiary Address to be added to the whitelist
+  */
   function addToWhitelist(address _beneficiary) external onlyOwnerOrExecutor {
     whitelist[_beneficiary] = true;
   }
@@ -141,19 +141,19 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   }
 
 
-    /**
-   * @dev Validation of an incoming purchase. Overridden to ensure that the tokensale contains enough tokens to sell.
-   * @param _beneficiary Address performing the token purchase
-   * @param _weiAmount Value in wei involved in the purchase
-   */
+  /**
+  * @dev Validation of an incoming purchase. Overridden to ensure that the tokensale contains enough tokens to sell.
+  * @param _beneficiary Address performing the token purchase
+  * @param _weiAmount Value in wei involved in the purchase
+  */
   function _preValidatePurchase(address _beneficiary, uint256 _weiAmount) internal {
     require(token.balanceOf(this) > _getTokenAmount(_weiAmount));
     super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 
-    /**
-   * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
-   */
+  /**
+  * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
+  */
   function claimRefund() public {
     require(isFinalized);
     require(!goalReached() || refundsAllowed == true);
@@ -161,12 +161,12 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     vault.refund(msg.sender);
   }
 
-/**
-* @dev Allow the tokensale owner to specify that refunds are allowed regardless of soft cap goal
-*/
+  /**
+  * @dev Allow the tokensale owner to specify that refunds are allowed regardless of soft cap goal
+  */
   function allowRefunds() external onlyOwner {
-      require(hasClosed());
-      refundsAllowed = true;
+    require(hasClosed());
+    refundsAllowed = true;
   }
 
 }

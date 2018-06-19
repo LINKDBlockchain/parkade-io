@@ -106,7 +106,7 @@ contract ParkadeCoin is StandardToken, Ownable {
    */
   function transferFrom(address _from, address _to, uint256 _value)
   public
-  onlyPayloadSize(2*32)
+  onlyPayloadSize(3*32)
   returns (bool success)
   {
     require(_to != address(0));

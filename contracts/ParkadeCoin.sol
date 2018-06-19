@@ -20,7 +20,7 @@ contract ParkadeCoin is StandardToken, Ownable {
     There are a total of 400,000,000 tokens * 10^18 = 4 * 10^26 token units total
     A scaling value of 1e10 means that a deposit of 0.04Eth will increase scaledDividendPerToken by 1.
     A scaling value of 1e10 means that investors must wait until their scaledDividendBalances 
-      is at least 1e10 before any withdrawls will credit their account.
+      is at least 1e10 before any withdrawals will credit their account.
   */
   uint256 public scaling = uint256(10) ** 10;
 
@@ -105,9 +105,9 @@ contract ParkadeCoin is StandardToken, Ownable {
    * @param _value uint256 the amount of tokens to be transferred
    */
   function transferFrom(address _from, address _to, uint256 _value)
-      public
-      onlyPayloadSize(2*32)
-      returns (bool success)
+  public
+  onlyPayloadSize(2*32)
+  returns (bool success)
   {
     require(_to != address(0));
     require(_value <= balances[_from]);

@@ -28,8 +28,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   uint256 public closingTime = 1536839999;
 
   // Timestamp indicating when unsold tokens may be withdrawn by the Parkade.io wallet for future use
-  // Sept 1, 2019 12:00:00AM GMT
-  uint256 public unusedTokensWithdrawalTime = 1567296000;
+  // Sept 14, 2019 12:00:00AM GMT
+  uint256 public unusedTokensWithdrawalTime = 1536883200;
 
   // A separate Ethereum address which only has the right to add addresses to the whitelist
   // It is not permitted to access any other functionality, or to claim funds

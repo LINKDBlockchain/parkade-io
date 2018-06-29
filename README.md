@@ -47,7 +47,7 @@ Table 1: Token price per timeframe
 | Aug 22 - Sept 14 | 0.000680          | 0%                |
 
 Token Disbursement: Immediately after purchase\
-Refund Policy: If the soft cap of 680ETH is not met by end of token sale (August 31st, 2018 11:59PM GMT), then investors may claim refunds. If the soft cap is met, then refunds will only be permitted at the discretion of the parkade.io team.
+Refund Policy: If the soft cap of 680ETH is not met by end of token sale (September 14th, 2018 11:59PM GMT), then investors may claim refunds. If the soft cap is met, then refunds will only be permitted at the discretion of the parkade.io team.
 
 ### Functionality
 Functionality is typical of most crowdsales. Investors may only contribute once they have been added to the whitelist following KYC/AML validation. Please see [parkade.io](http://www.parkade.io) for more details and to apply to be whitelisted.

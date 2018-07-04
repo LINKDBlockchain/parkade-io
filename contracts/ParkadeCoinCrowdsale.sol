@@ -9,26 +9,27 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   
   // Discounted Rates. This is the amount of tokens (of the smallest possible denomination ie- 0.0000...0001PRKC) 
   // that a user will receive per Wei contributed to the sale.
-  uint256 public firstDiscountedRate = 1838;
-  uint256 public secondDiscountedRate = 1634;
-  uint256 public nonDiscountedRate = 1470;
+  uint256 public firstBonusRate = 1838;
+  uint256 public secondBonusRate = 1634;
+  uint256 public normalRate = 1470;
 
   // Timestamp indicating when the crowdsale will open
-  // Aug 1, 2018 12:00:00 AM GMT
-  uint256 public openingTime = 1533081600;
+  // Aug 7, 2018 12:00:00 AM GMT
+  uint256 public openingTime = 1533600000;
 
   // Timestamps indicating when the first and second discount will end.
-  // Aug 7, 2018 11:59:59PM GMT
-  uint256 public firstDiscountEnds = 1533686399;
-  // Aug 20, 2018 11:59:59PM GMT
-  uint256 public secondDiscountEnds = 1534766399;
+  // Aug 13, 2018 11:59:59PM GMT
+  uint256 public firstBonusEnds = 1534204799;
+
+  // Aug 27, 2018 11:59:59PM GMT
+  uint256 public secondBonusEnds = 1535414399;
 
   // Timestamp indicating when the crowdsale will close
-  // Sep 13, 2018 11:59:59PM GMT
-  uint256 public closingTime = 1536839999;
+  // Sep 18, 2018 11:59:59PM GMT
+  uint256 public closingTime = 1537228799;
 
   // Timestamp indicating when unsold tokens may be withdrawn by the Parkade.io wallet for future use
-  // Sept 14, 2019 12:00:00AM GMT
+  // Sept 17, 2019 12:00:00AM GMT
   uint256 public unusedTokensWithdrawalTime = 1568419200;
 
   // A separate Ethereum address which only has the right to add addresses to the whitelist
@@ -49,7 +50,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     StandardToken _token
   )
   public 
-  Crowdsale(nonDiscountedRate, _owner, _token) 
+  Crowdsale(normalRate, _owner, _token) 
   TimedCrowdsale(openingTime, closingTime)
   RefundableCrowdsale(_goal)
   {
@@ -70,13 +71,13 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @return Current price per token in wei
   */
   function currentRate() public view returns (uint256) {
-    if (block.timestamp < firstDiscountEnds)
+    if (block.timestamp < firstBonusEnds)
     {
-      return firstDiscountedRate;
+      return firstBonusRate;
     }
-    else if (block.timestamp >= firstDiscountEnds && block.timestamp < secondDiscountEnds)
+    else if (block.timestamp >= firstBonusEnds && block.timestamp < secondBonusEnds)
     {
-      return secondDiscountedRate;
+      return secondBonusRate;
     }
     else 
     {

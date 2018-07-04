@@ -177,4 +177,15 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     refundsAllowed = true;
   }
 
+   /**
+   * @dev vault finalization task, called when owner calls finalize()
+   * Burn all unsold tokens
+   */
+   // TODO: Test burn functionality!
+  function finalization() internal {
+    token.burn(token.balanceOf(this));
+
+    super.finalization();
+  }
+
 }

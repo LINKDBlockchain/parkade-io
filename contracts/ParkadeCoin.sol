@@ -1,15 +1,17 @@
 pragma solidity 0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
+
 
 /**
     @title A dividend-paying ERC20 token,
     @dev Based on https://programtheblockchain.com/posts/2018/02/07/writing-a-simple-dividend-token-contract/
           and https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/
 */
-contract ParkadeCoin is StandardToken, Ownable {
+contract ParkadeCoin is StandardToken, BurnableToken, Ownable {
 
   string public name = "Parkade Coin";
   string public symbol = "PRKC";

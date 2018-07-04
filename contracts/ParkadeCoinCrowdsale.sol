@@ -156,7 +156,13 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
   */
   function claimRefund() public {
-    require(isFinalized);
+    // If tokensale is finalized, funds have already been withdrawn and cannot be refunded
+    require(!isFinalized);
+
+    // Cannot refund before tokensale is finished
+    require(hasClosed());
+
+    // Refund only if the soft cap is not met, or if refunds are allowed by owner
     require(!goalReached() || refundsAllowed == true);
 
     vault.refund(msg.sender);
@@ -166,6 +172,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @dev Allow the tokensale owner to specify that refunds are allowed regardless of soft cap goal
   */
   function allowRefunds() external onlyOwner {
+    require(!isFinalized);
     require(hasClosed());
     refundsAllowed = true;
   }

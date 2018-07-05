@@ -9,27 +9,24 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   
   // Discounted Rates. This is the amount of tokens (of the smallest possible denomination ie- 0.0000...0001PRKC) 
   // that a user will receive per Wei contributed to the sale.
-  uint256 public firstDiscountedRate = 1838;
-  uint256 public secondDiscountedRate = 1634;
-  uint256 public nonDiscountedRate = 1470;
+  uint256 public firstBonusRate = 1838;
+  uint256 public secondBonusRate = 1634;
+  uint256 public normalRate = 1470;
 
   // Timestamp indicating when the crowdsale will open
-  // Aug 1, 2018 12:00:00 AM GMT
-  uint256 public openingTime = 1533081600;
+  // Aug 7, 2018 12:00:00 AM GMT
+  uint256 public openingTime = 1533600000;
 
   // Timestamps indicating when the first and second discount will end.
-  // Aug 7, 2018 11:59:59PM GMT
-  uint256 public firstDiscountEnds = 1533686399;
-  // Aug 20, 2018 11:59:59PM GMT
-  uint256 public secondDiscountEnds = 1534766399;
+  // Aug 13, 2018 11:59:59PM GMT
+  uint256 public firstBonusEnds = 1534204799;
+
+  // Aug 27, 2018 11:59:59PM GMT
+  uint256 public secondBonusEnds = 1535414399;
 
   // Timestamp indicating when the crowdsale will close
-  // Sep 13, 2018 11:59:59PM GMT
-  uint256 public closingTime = 1536839999;
-
-  // Timestamp indicating when unsold tokens may be withdrawn by the Parkade.io wallet for future use
-  // Sept 14, 2019 12:00:00AM GMT
-  uint256 public unusedTokensWithdrawalTime = 1568419200;
+  // Sep 18, 2018 11:59:59PM GMT
+  uint256 public closingTime = 1537228799;
 
   // A separate Ethereum address which only has the right to add addresses to the whitelist
   // It is not permitted to access any other functionality, or to claim funds
@@ -46,10 +43,10 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     uint256 _goal,
     address _owner,
     address _executor,
-    StandardToken _token
+    BurnableToken _token
   )
   public 
-  Crowdsale(nonDiscountedRate, _owner, _token) 
+  Crowdsale(normalRate, _owner, _token) 
   TimedCrowdsale(openingTime, closingTime)
   RefundableCrowdsale(_goal)
   {
@@ -70,30 +67,18 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @return Current price per token in wei
   */
   function currentRate() public view returns (uint256) {
-    if (block.timestamp < firstDiscountEnds)
+    if (block.timestamp < firstBonusEnds)
     {
-      return firstDiscountedRate;
+      return firstBonusRate;
     }
-    else if (block.timestamp >= firstDiscountEnds && block.timestamp < secondDiscountEnds)
+    else if (block.timestamp >= firstBonusEnds && block.timestamp < secondBonusEnds)
     {
-      return secondDiscountedRate;
+      return secondBonusRate;
     }
     else 
     {
       return rate;
     }
-  }
-
-  /**
-   * @dev Function to allow the Tokensale's owner to withdraw unsold tokens after the predetermined time
-   * @param _amount Number of PRKC tokens to withdrawal
-   */
-  function withdrawalUnsoldTokens(uint256 _amount) external onlyOwner {
-    require (block.timestamp > unusedTokensWithdrawalTime);
-    // Ensure contract has enough tokens to withdraw
-    require(token.balanceOf(this) >= _amount);
-    // Note: Withdrawal goes to the "wallet" variable - specified during instantiation.
-    _processPurchase(wallet, _amount);
   }
 
   /**
@@ -155,7 +140,13 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
   */
   function claimRefund() public {
-    require(isFinalized);
+    // If tokensale is finalized, funds have already been withdrawn and cannot be refunded
+    require(!isFinalized);
+
+    // Cannot refund before tokensale is finished
+    require(hasClosed());
+
+    // Refund only if the soft cap is not met, or if refunds are allowed by owner
     require(!goalReached() || refundsAllowed == true);
 
     vault.refund(msg.sender);
@@ -165,8 +156,21 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @dev Allow the tokensale owner to specify that refunds are allowed regardless of soft cap goal
   */
   function allowRefunds() external onlyOwner {
+    require(!isFinalized);
     require(hasClosed());
     refundsAllowed = true;
+    vault.enableRefunds();
+  }
+
+   /**
+   * @dev vault finalization task, called when owner calls finalize()
+   * Burn all unsold tokens
+   */
+  function finalization() internal {
+    require(!refundsAllowed);
+    token.burn(token.balanceOf(this));
+
+    super.finalization();
   }
 
 }

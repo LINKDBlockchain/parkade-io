@@ -17,7 +17,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   // Aug 7, 2018 12:00:00 AM GMT
   uint256 public openingTime = 1533600000;
 
-  // Timestamps indicating when the first and second discount will end.
+  // Timestamps indicating when the first and second bonus will end.
   // Aug 13, 2018 11:59:59PM GMT
   uint256 public firstBonusEnds = 1534204799;
 
@@ -25,7 +25,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   uint256 public secondBonusEnds = 1535414399;
 
   // Timestamp indicating when the crowdsale will close
-  // Sep 18, 2018 11:59:59PM GMT
+  // Sep 17, 2018 11:59:59PM GMT
   uint256 public closingTime = 1537228799;
 
   // A separate Ethereum address which only has the right to add addresses to the whitelist

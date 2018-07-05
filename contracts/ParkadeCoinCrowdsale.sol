@@ -17,7 +17,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   // Aug 7, 2018 12:00:00 AM GMT
   uint256 public openingTime = 1533600000;
 
-  // Timestamps indicating when the first and second discount will end.
+  // Timestamps indicating when the first and second bonus will end.
   // Aug 13, 2018 11:59:59PM GMT
   uint256 public firstBonusEnds = 1534204799;
 
@@ -25,7 +25,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   uint256 public secondBonusEnds = 1535414399;
 
   // Timestamp indicating when the crowdsale will close
-  // Sep 18, 2018 11:59:59PM GMT
+  // Sep 17, 2018 11:59:59PM GMT
   uint256 public closingTime = 1537228799;
 
   // A separate Ethereum address which only has the right to add addresses to the whitelist
@@ -140,14 +140,14 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   * @dev Investors can claim refunds here if crowdsale is unsuccessful (softcap not reached or as specified by owner)
   */
   function claimRefund() public {
-    // If tokensale is finalized, funds have already been withdrawn and cannot be refunded
-    require(!isFinalized);
-
     // Cannot refund before tokensale is finished
     require(hasClosed());
 
-    // Refund only if the soft cap is not met, or if refunds are allowed by owner
-    require(!goalReached() || refundsAllowed == true);
+    // If the goal has been reached, then double-check that refunds are allowed by owner's override
+    if (goalReached())
+    {
+      require(refundsAllowed);
+    }
 
     vault.refund(msg.sender);
   }

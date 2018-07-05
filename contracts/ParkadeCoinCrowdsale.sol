@@ -28,10 +28,6 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   // Sep 18, 2018 11:59:59PM GMT
   uint256 public closingTime = 1537228799;
 
-  // Timestamp indicating when unsold tokens may be withdrawn by the Parkade.io wallet for future use
-  // Sept 17, 2019 12:00:00AM GMT
-  uint256 public unusedTokensWithdrawalTime = 1568419200;
-
   // A separate Ethereum address which only has the right to add addresses to the whitelist
   // It is not permitted to access any other functionality, or to claim funds
   // This is required for easier administration of the ParkadeCoin Crowdsale
@@ -47,7 +43,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     uint256 _goal,
     address _owner,
     address _executor,
-    StandardToken _token
+    BurnableToken _token
   )
   public 
   Crowdsale(normalRate, _owner, _token) 
@@ -83,18 +79,6 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     {
       return rate;
     }
-  }
-
-  /**
-   * @dev Function to allow the Tokensale's owner to withdraw unsold tokens after the predetermined time
-   * @param _amount Number of PRKC tokens to withdrawal
-   */
-  function withdrawalUnsoldTokens(uint256 _amount) external onlyOwner {
-    require (block.timestamp > unusedTokensWithdrawalTime);
-    // Ensure contract has enough tokens to withdraw
-    require(token.balanceOf(this) >= _amount);
-    // Note: Withdrawal goes to the "wallet" variable - specified during instantiation.
-    _processPurchase(wallet, _amount);
   }
 
   /**
@@ -175,14 +159,15 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     require(!isFinalized);
     require(hasClosed());
     refundsAllowed = true;
+    vault.enableRefunds();
   }
 
    /**
    * @dev vault finalization task, called when owner calls finalize()
    * Burn all unsold tokens
    */
-   // TODO: Test burn functionality!
   function finalization() internal {
+    require(!refundsAllowed);
     token.burn(token.balanceOf(this));
 
     super.finalization();

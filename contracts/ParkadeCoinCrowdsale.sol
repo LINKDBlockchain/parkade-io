@@ -43,7 +43,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     uint256 _goal,
     address _owner,
     address _executor,
-    BurnableToken _token
+    StandardToken _token
   )
   public 
   Crowdsale(normalRate, _owner, _token) 
@@ -164,12 +164,11 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
 
    /**
    * @dev vault finalization task, called when owner calls finalize()
-   * Burn all unsold tokens
    */
   function finalization() internal {
     require(!refundsAllowed);
-    token.burn(token.balanceOf(this));
 
+    // Transfer funds to timelock
     super.finalization();
   }
 

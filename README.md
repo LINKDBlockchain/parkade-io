@@ -37,7 +37,6 @@ Opening Time: August 7th, 2018 12:00AM GMT\
 Closing Time: September 17th, 2018 11:59PM GMT\
 Soft Cap: 680ETH\
 Hard Cap: 138,720 ETH\
-Unsold Tokens: Burned at end of tokensale
 
 Table 1: Token Price & Bonus Amount Per Timeframe
 

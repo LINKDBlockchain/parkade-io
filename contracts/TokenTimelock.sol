@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * @title TokenTimelock
@@ -8,6 +9,7 @@ import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
  * beneficiary to extract the tokens after a given release time
  */
 contract TokenTimelock {
+  using SafeMath for uint256;
 
   // ERC20 basic token contract being held
   StandardToken public token;
@@ -16,14 +18,22 @@ contract TokenTimelock {
   address public beneficiary;
 
   // timestamp when token release is enabled
-  uint256 public releaseTime;
+  uint256 public cliffPeriod;
 
-  function TokenTimelock(StandardToken _token, address _beneficiary, uint256 _releaseTime) public {
+  // 30 days
+  uint256 public vestingPeriod = 2678400;
+
+  uint256 public chunksAlreadyVested;
+
+  function TokenTimelock(StandardToken _token, address _beneficiary, uint256 _cliffPeriod) public {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime > block.timestamp);
+    require(_cliffPeriod > block.timestamp);
+
+    chunksAlreadyVested = 0;
+
     token = _token;
     beneficiary = _beneficiary;
-    releaseTime = _releaseTime;
+    cliffPeriod = _cliffPeriod;
   }
 
   /**
@@ -31,10 +41,21 @@ contract TokenTimelock {
    */
   function release() public {
     // solium-disable-next-line security/no-block-members
-    require(block.timestamp >= releaseTime);
+    require(block.timestamp >= cliffPeriod);
 
-    uint256 amount = token.balanceOf(this);
+    // How many full months have gone by since beginning 
+    uint256 chunksNeeded = (block.timestamp.sub(_cliffPeriod)).div(vestingPeriod) + 1;
+
+    // Figure out how many more months since last time vesting occurred
+    uint256 chunksToVest = chunksNeeded.sub(chunksAlreadyVested);
+
+    require (chunksToVest > 0);
+
+    // Divide total balance by 10, multiply by number of chunks to vest
+    uint256 amount = (token.balanceOf(this).div(10)).mul(chunksToVest);
     require(amount > 0);
+
+    chunksAlreadyVested = chunksNeeded;
 
     token.transfer(beneficiary, amount);
   }

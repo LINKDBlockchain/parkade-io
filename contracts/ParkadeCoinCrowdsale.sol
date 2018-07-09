@@ -38,11 +38,15 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   //  the soft cap is not met.
   bool refundsAllowed;
 
+  // Address where unsold tokens will be sent upon finalization of the sale
+  address tokenTimelockContract;
+
   constructor
   (
     uint256 _goal,
     address _owner,
     address _executor,
+    address _tokenTimelockContract,
     StandardToken _token
   )
   public 
@@ -50,6 +54,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   TimedCrowdsale(openingTime, closingTime)
   RefundableCrowdsale(_goal)
   {
+    tokenTimelockContract = _tokenTimelockContract;
     executor = _executor;
     refundsAllowed = false;
   }
@@ -168,6 +173,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
   function finalization() internal {
     require(!refundsAllowed);
 
+    // Send all unsold tokens to the Timelock contract for future vesting
+    token.transfer(tokenTimelockContract,token.balanceOf(this));
     // Transfer funds to timelock
     super.finalization();
   }

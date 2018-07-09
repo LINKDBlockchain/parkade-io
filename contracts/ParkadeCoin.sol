@@ -11,7 +11,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
           and https://programtheblockchain.com/posts/2018/02/13/writing-a-robust-dividend-token-contract/
 */
 contract ParkadeCoin is StandardToken, Ownable {
-
+  using SafeMath for uint256;
   string public name = "Parkade Coin";
   string public symbol = "PRKC";
   uint8 public decimals = 18;

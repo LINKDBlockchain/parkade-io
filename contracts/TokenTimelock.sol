@@ -25,6 +25,8 @@ contract TokenTimelock {
 
   uint256 public chunksAlreadyVested;
 
+  uint256 totalAmount;
+
   function TokenTimelock(StandardToken _token, address _beneficiary, uint256 _cliffPeriod) public {
     // solium-disable-next-line security/no-block-members
     require(_cliffPeriod > block.timestamp);
@@ -44,15 +46,28 @@ contract TokenTimelock {
     require(block.timestamp >= cliffPeriod);
 
     // How many full months have gone by since beginning 
-    uint256 chunksNeeded = (block.timestamp.sub(_cliffPeriod)).div(vestingPeriod) + 1;
+    uint256 chunksNeeded = (block.timestamp.sub(cliffPeriod)).div(vestingPeriod) + 1;
+
+    // Prevent vesting more than 100% of tokens
+    if (chunksNeeded > 10)
+    {
+      chunksNeeded = 10;
+    }
 
     // Figure out how many more months since last time vesting occurred
     uint256 chunksToVest = chunksNeeded.sub(chunksAlreadyVested);
 
     require (chunksToVest > 0);
 
+    // If this is the first time vesting has happened,
+    if (chunksAlreadyVested == 0) 
+    {
+      // Set the total amount, as no new tokens will enter this contract
+      totalAmount = token.balanceOf(this);
+    }
+
     // Divide total balance by 10, multiply by number of chunks to vest
-    uint256 amount = (token.balanceOf(this).div(10)).mul(chunksToVest);
+    uint256 amount = (totalAmount.div(10)).mul(chunksToVest);
     require(amount > 0);
 
     chunksAlreadyVested = chunksNeeded;

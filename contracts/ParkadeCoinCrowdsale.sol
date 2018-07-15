@@ -82,7 +82,7 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     }
     else 
     {
-      return rate;
+      return normalRate;
     }
   }
 
@@ -174,8 +174,8 @@ contract ParkadeCoinCrowdsale is TimedCrowdsale, RefundableCrowdsale, Whiteliste
     require(!refundsAllowed);
 
     // Send all unsold tokens to the Timelock contract for future vesting
-    token.transfer(tokenTimelockContract,token.balanceOf(this));
-    // Transfer funds to timelock
+    token.transfer(tokenTimelockContract, token.balanceOf(this));
+   
     super.finalization();
   }
 

@@ -14,15 +14,16 @@ contract TokenTimelock {
   // ERC20 basic token contract being held
   StandardToken public token;
 
-  // beneficiary of tokens after they are released
+  // Beneficiary of tokens after they are released
   address public beneficiary;
 
-  // timestamp when token release is enabled
+  // Timestamp when token release is enabled
   uint256 public cliffPeriod;
 
   // 30 days
   uint256 public vestingPeriod = 2678400;
 
+  // A chunk is defined as 10% of total tokens
   uint256 public chunksAlreadyVested;
 
   uint256 totalAmount;
@@ -45,10 +46,11 @@ contract TokenTimelock {
     // solium-disable-next-line security/no-block-members
     require(block.timestamp >= cliffPeriod);
 
-    // How many full months have gone by since beginning 
+    // How many full months have gone by SINCE the end of the cliff period, plus one
+    //  -- plus one, so that on the day of the cliff period ending, one chunk will be available for withdrawl
     uint256 chunksNeeded = (block.timestamp.sub(cliffPeriod)).div(vestingPeriod) + 1;
 
-    // Prevent vesting more than 100% of tokens
+    // Prevent vesting more than 100% (10 chunks) of tokens
     if (chunksNeeded > 10)
     {
       chunksNeeded = 10;
@@ -70,6 +72,7 @@ contract TokenTimelock {
     uint256 amount = (totalAmount.div(10)).mul(chunksToVest);
     require(amount > 0);
 
+    // Keep track of how many chunks we've vested so far
     chunksAlreadyVested = chunksNeeded;
 
     token.transfer(beneficiary, amount);

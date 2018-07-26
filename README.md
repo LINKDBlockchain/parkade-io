@@ -1,6 +1,6 @@
 # PARKADE.IO
 
-This is the smart contract repository for the PARKADE.IO token, and tokensale. Relevant source code files are located in the contracts/ folder.
+This is the smart contract repository for the PARKADE.IO token. Relevant source code files are located in the contracts/ folder.
 
 ## Token Contract
 
@@ -26,28 +26,4 @@ For instance, if a user was owed dividends and then transferred his tokens to an
 
 **NOTE** _Tokens must be held in user's personal wallets to be entitled to their dividends. Thus, please ensure you are not holding your tokens in an exchange account when dividend payout takes place otherwise you will not be able to withdraw the dividend._
 
-## Tokensale Contract
-
-### About
-A standard, timed, refundable, whitelist-compatible crowdsale contract designed for Parkade.IO tokensale.
-
-### Stats
-**Please see [parkade.io](http://www.parkade.io) for more info**\
-Opening Time: August 18th, 2018 12:00AM GMT\
-Closing Time: September 28th, 2018 11:59PM GMT\
-Soft Cap: 680ETH\
-Hard Cap: 138,720 ETH\
-
-Table 1: Token Price & Bonus Amount Per Timeframe
-
-| Timeframe        | Token Price (Eth) | Bonus             |
-|------------------|-------------------|-------------------|
-| Aug 18 - Aug 25  | 0.000544          | 20%               |
-| Aug 26 - Sep 8   | 0.000612          | 10%               |
-| Aug 9 - Sep 28   | 0.000680          | 0%                |
-
-Token Disbursement: Immediately after purchase\
-Refund Policy: If the soft cap of 680ETH is not met by end of token sale, then investors may claim refunds. If the soft cap is met, then refunds will only be permitted at the discretion of the parkade.io team.
-
-### Functionality
-Functionality is typical of most crowdsales. Investors may only contribute once they have been added to the whitelist following KYC/AML validation. Please see [parkade.io](http://www.parkade.io) for more details and to apply to be whitelisted.
+**Please see [parkade.io](http://www.parkade.io) for more info**

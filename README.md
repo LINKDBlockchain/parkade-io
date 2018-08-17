@@ -2,6 +2,9 @@
 
 This is the smart contract repository for the PARKADE.IO token. Relevant source code files are located in the contracts/ folder.
 
+**The official (deployed) Parkade.io Token Smart Contract is located HERE**
+[0xFD51C3A3E6358A586ba6ac1e7A6269a7915Fc116](https://etherscan.io/address/0xfd51c3a3e6358a586ba6ac1e7a6269a7915fc116)
+
 ## Token Contract
 
 ### About

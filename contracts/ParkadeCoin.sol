@@ -74,8 +74,6 @@ contract ParkadeCoin is StandardToken, Ownable {
   event Deposit(uint256 value);
   event Withdraw(uint256 paidOut, address indexed to);
 
-  mapping(address => mapping(address => uint256)) public allowance;
-
   /**
   * @dev transfer token for a specified address
   * @param _to The address to transfer to.

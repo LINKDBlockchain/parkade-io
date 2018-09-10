@@ -63,6 +63,7 @@ contract ParkingLot {
     /**
      * @dev Check-Out function
      * Receives payment from the user, calculates whether payment is sufficient. If true, then removes the user's address from lotDatabase.
+     * Refunds any excess payment back to the source Ethereum wallet
      * Automatically distributes resulting Eth to wallets:
      * * 10% of TOTAL Eth --> operationalWallet
      * * 50% of REMAINING Eth --> profitSharingWallet
